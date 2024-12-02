@@ -1,28 +1,20 @@
-// API URL for fetching random quotes
-const apiUrl = "http://api.quotable.io/random";
+const apiUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://api.quotable.io/random");
 
-// Select HTML elements
 const quoteText = document.querySelector("#quote");
 const authorText = document.querySelector("#author");
 const speakButton = document.querySelector("#speak-button");
 const newQuoteButton = document.querySelector("#new-quote-button");
 
-// Function to fetch a new quote
 function fetchQuote() {
     quoteText.innerText = "Loading...";
     authorText.innerText = "";
 
     fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to fetch the quote");
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            // Update the text with the fetched quote
-            quoteText.innerText = `"${data.content}"`;
-            authorText.innerText = `- ${data.author}`;
+            const quoteData = JSON.parse(data.contents);
+            quoteText.innerText = `"${quoteData.content}"`;
+            authorText.innerText = `- ${quoteData.author}`;
         })
         .catch(error => {
             console.error("Error fetching the quote:", error);
@@ -31,7 +23,6 @@ function fetchQuote() {
         });
 }
 
-// Function to use speech synthesis
 function speakQuote() {
     const quote = quoteText.innerText;
     const author = authorText.innerText;
@@ -42,13 +33,11 @@ function speakQuote() {
     }
 
     const utterance = new SpeechSynthesisUtterance(`${quote} ${author}`);
-    utterance.lang = "en-US"; // Language setting for the speech
+    utterance.lang = "en-US";
     speechSynthesis.speak(utterance);
 }
 
-// Add event listeners for buttons
 newQuoteButton.addEventListener("click", fetchQuote);
 speakButton.addEventListener("click", speakQuote);
 
-// Fetch the initial quote when the page loads
 fetchQuote();
