@@ -1,43 +1,30 @@
-const apiUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://api.quotable.io/random");
+const quoteElement = document.getElementById("quote");
+const authorElement = document.getElementById("author");
+const newQuoteButton = document.getElementById("new-quote");
+const speakQuoteButton = document.getElementById("speak-quote");
 
-const quoteText = document.querySelector("#quote");
-const authorText = document.querySelector("#author");
-const speakButton = document.querySelector("#speak-button");
-const newQuoteButton = document.querySelector("#new-quote-button");
-
-function fetchQuote() {
-    quoteText.innerText = "Loading...";
-    authorText.innerText = "";
-
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            const quoteData = JSON.parse(data.contents);
-            quoteText.innerText = `"${quoteData.content}"`;
-            authorText.innerText = `- ${quoteData.author}`;
-        })
-        .catch(error => {
-            console.error("Error fetching the quote:", error);
-            quoteText.innerText = "Oops! Something went wrong.";
-            authorText.innerText = "";
-        });
+// Fetch random quotes
+async function fetchQuote() {
+    try {
+        const response = await fetch("http://api.quotable.io/random");
+        const data = await response.json();
+        quoteElement.textContent = `"${data.content}"`;
+        authorElement.textContent = `- ${data.author}`;
+    } catch (error) {
+        quoteElement.textContent = "Oops! Unable to fetch a quote.";
+        authorElement.textContent = "- Error";
+    }
 }
 
+// Speak the current quote
 function speakQuote() {
-    const quote = quoteText.innerText;
-    const author = authorText.innerText;
-
-    if (!quote || quote === "Loading..." || quote === "Oops! Something went wrong.") {
-        alert("No quote available to speak.");
-        return;
-    }
-
+    const quote = quoteElement.textContent;
+    const author = authorElement.textContent;
     const utterance = new SpeechSynthesisUtterance(`${quote} ${author}`);
     utterance.lang = "en-US";
     speechSynthesis.speak(utterance);
 }
 
+// Event listeners
 newQuoteButton.addEventListener("click", fetchQuote);
-speakButton.addEventListener("click", speakQuote);
-
-fetchQuote();
+speakQuoteButton.addEventListener("click", speakQuote);
