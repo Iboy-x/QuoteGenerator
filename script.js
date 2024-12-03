@@ -6,7 +6,7 @@ const speakQuoteButton = document.getElementById("speak-quote");
 // Fetch random quotes
 async function fetchQuote() {
     try {
-        const response = await fetch("https://api.quotable.io/random");
+        const response = await fetch("http://api.quotable.io/random");
         const data = await response.json();
         quoteElement.textContent = `"${data.content}"`;
         authorElement.textContent = `- ${data.author}`;
